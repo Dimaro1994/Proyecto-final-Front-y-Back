@@ -1,0 +1,117 @@
+{
+	"info": {
+		"_postman_id": "c0ed33f1-5352-4a55-9da6-5bdd4c5926f5",
+		"name": "A_p_i_",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31434535",
+		"_collection_link": "https://lunar-station-771644.postman.co/workspace/New-Team-Workspace~48cec9b0-ca95-4cf0-9d06-2f97ed0784db/collection/31434535-c0ed33f1-5352-4a55-9da6-5bdd4c5926f5?action=share&source=collection_link&creator=31434535"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"email@gmail.com\", \n    \"password\":\"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"email@gmail.com\", \n    \"password\":\"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comentario",
+			"item": [
+				{
+					"name": "New Opinion",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get Opinion",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Opinion",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Opinion",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
