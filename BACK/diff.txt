@@ -1,0 +1,161 @@
+diff --git a/.env b/.env
+index 7e6ee9d..e6810fa 100644
+--- a/.env
++++ b/.env
+@@ -2,4 +2,5 @@ PORT=3000
+ MYSQL_HOST=localhost
+ MYSQL_USER=root
+ MYSQL_PASSWORD=1234
+-MYSQL_DATABASE=A_P_IPROYECTO2
+\ No newline at end of file
++MYSQL_DATABASE=A_P_IPROYECTO2
++SECRET=JASKDJFPOQJEMKLFMJsladkfñdkavmfñoeirjfisocerkomfcñdks
+\ No newline at end of file
+diff --git a/DB/users.js b/DB/users.js
+index 17e3dbc..b29224e 100644
+--- a/DB/users.js
++++ b/DB/users.js
+@@ -2,6 +2,36 @@ const bcrypt = require('bcrypt')
+ const { generateError } = require('../helpers')
+ const { getConnection } = require('./DB')
+ 
++const getUserByEmail = async (email) => {
++  let connection
++  try {
++    connection = await getConnection()
++
++    const [result] = await connection.query('SELECT * FROM users WHERE email = ?', [email])
++    if (result.length === 0) {
++      throw generateError('no hay usuarios con ese email', 404)
++    }
++    return result[0]
++  } finally {
++    if (connection) connection.release()
++  }
++}
++
++const getUserById = async (id) => {
++  let connection
++  try {
++    connection = await getConnection()
++
++    const [result] = await connection.query('SELECT id, email, created_at FROM users WHERE id= ?', [id])
++    if (result.length === 0) {
++      throw generateError('no hay usuarios con esa id', 404)
++    }
++    return result[0]
++  } finally {
++    if (connection) connection.release()
++  }
++}
++
+ const createUser = async (email, password) => {
+   let connection
+ 
+@@ -30,4 +60,4 @@ const createUser = async (email, password) => {
+   } finally { if (connection) connection.release() }
+ }
+ 
+-module.exports = { createUser }
++module.exports = { createUser, getUserById, getUserByEmail }
+diff --git a/controllers/opinion.js b/controllers/opinion.js
+index ce69242..1e57c7a 100644
+--- a/controllers/opinion.js
++++ b/controllers/opinion.js
+@@ -10,6 +10,8 @@ const getOpinionController = async (req, res, next) => {
+ }
+ 
+ const newOpinionController = async (req, res, next) => {
++  console.log(req.headers)
++
+   try {
+     res.send({
+       status: 'error',
+diff --git a/controllers/users.js b/controllers/users.js
+index 3433a99..a5cb742 100644
+--- a/controllers/users.js
++++ b/controllers/users.js
+@@ -1,6 +1,10 @@
++const bcrypt = require('bcrypt')
++
++const jwt = require('jsonwebtoken')
++
+ const { generateError } = require('../helpers.js')
+ 
+-const { createUser } = require('../DB/users.js')
++const { createUser, getUserById, getUserByEmail } = require('../DB/users.js')
+ 
+ const newUserController = async (req, res, next) => {
+   try {
+@@ -33,9 +37,12 @@ const newUserController = async (req, res, next) => {
+ 
+ const getUserController = async (req, res, next) => {
+   try {
++    const { id } = req.params
++    const user = await getUserById(id)
++
+     res.send({
+-      status: 'error',
+-      message: 'not implemented'
++      status: 'OK',
++      data: user
+     })
+   } catch (error) {
+     next(error)
+@@ -44,9 +51,31 @@ const getUserController = async (req, res, next) => {
+ 
+ const loginController = async (req, res, next) => {
+   try {
++    const { email, password } = req.body
++    if (!email || !password) {
++      throw generateError('debes enviar un email y una contraseña', 404)
++    }
++    // recojo datos de a base de datos del usuario con ese email
++    const user = await getUserByEmail(email)
++
++    // compruebo que las contraseñas coinciden
++    const validPassword = bcrypt.compare(password, user.password)
++
++    if (!validPassword) {
++      throw generateError('la contraseña no coincide', 401)
++    }
++    // creo el payload del token
++
++    const payload = { id: user.id }
++
++    // firmo el token
++
++    const token = jwt.sign(payload, process.env.SECRET, { expiresIn: '30d' })
++
++    // envio el token
+     res.send({
+-      status: 'error',
+-      message: 'not implemented'
++      status: 'OK',
++      data: token
+     })
+   } catch (error) {
+     next(error)
+diff --git a/server.js b/server.js
+index f81b65e..2c35a24 100644
+--- a/server.js
++++ b/server.js
+@@ -31,17 +31,10 @@ app.post('/user', newUserController)
+ app.get('/user/:id', getUserController)
+ app.post('/login', loginController)
+ 
+-/* rutas de control de los comentarios
+-app.get('/comentarios', getComentariosController);
+-app.post('/comentarios', newComentarioController);
+-app.get('/comentario/:id', getSingleComentarioController);
+-app.delete('/comentario/:id', deleteComentarioController);
+- */
+-
+ app.get('/opinion', getOpinionController)
+ app.post('/opinion', newOpinionController)
+ app.get('/opinion/:id', getSingleOpinionController)
+-app.delete('/Opinion/:id', deleteOpinionController)
++app.delete('/opinion/:id', deleteOpinionController)
+ 
+ app.use((req, res) => {
+   res.status(404).send({
