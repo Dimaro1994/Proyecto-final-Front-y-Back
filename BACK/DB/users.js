@@ -32,7 +32,7 @@ const getUserById = async (id) => {
   }
 }
 
-const createUser = async (email, password) => {
+const createUser = async (email, password, name) => {
   let connection
 
   try {
@@ -51,8 +51,8 @@ const createUser = async (email, password) => {
     const PasswordHash = await bcrypt.hash(password, 8)
 
     // crea el usuario
-    const [newUser] = await connection.query('INSERT INTO users (email, password) Values(?, ?)',
-      [email, PasswordHash]
+    const [newUser] = await connection.query('INSERT INTO users (email, password, name) Values(?, ?, ?)',
+      [email, PasswordHash, name]
     )
     // devolver la id
 
