@@ -23,12 +23,16 @@ const PAGE_SIZE = 20
 
 const getAllOpinion = async (pageIndex) => {
   if (pageIndex === undefined) {
-    const [result] = await pool.query('SELECT * FROM opinion ORDER BY created_at DESC')
+    const [result] = await pool.query(`SELECT opinion.id, opinion.text, opinion.created_at, users.name, users.email
+    FROM opinion
+    INNER JOIN users ON opinion.users_id=users.id ORDER BY created_at DESC`)
     return result
   }
   const startIndex = pageIndex * PAGE_SIZE // paginación
   const [result] = await pool.query(
-    'SELECT * FROM opinion ORDER BY created_at DESC LIMIT ? OFFSET ?',
+    `SELECT opinion.id, opinion.text, opinion.created_at, users.name, users.email
+    FROM opinion
+    INNER JOIN users ON opinion.users_id=users.id ORDER BY created_at DESC LIMIT ? OFFSET ?`,
     [PAGE_SIZE, startIndex]
   )
   return result

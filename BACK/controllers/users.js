@@ -92,14 +92,14 @@ const updateProfileController = async (req, res, next) => {
 
 const newUserController = async (req, res, next) => {
   try {
-    const { email, password } = req.body
+    const { email, password, name } = req.body
 
     // esto deberia ser un join
 
     if (!email || !password) {
       throw generateError('debes introducir un email  y un password validos', 400)
     }
-    const id = await createUser(email, password)
+    const id = await createUser(email, password, name)
     console.log(id)
 
     res.status(201).send({
@@ -159,7 +159,12 @@ const loginController = async (req, res, next) => {
     // envio el token
     res.send({
       status: 'OK',
-      data: token
+      data: {
+        idUser: user.id,
+        name: user.name,
+        email: user.email,
+        token
+      }
     })
   } catch (error) {
     next(error)
