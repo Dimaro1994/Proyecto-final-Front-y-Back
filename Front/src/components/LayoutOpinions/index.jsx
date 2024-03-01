@@ -6,6 +6,7 @@ import { useMyContext } from "../../context/AuthContext";
 import axios from "axios";
 import { LuLoader2 } from "react-icons/lu";
 import ListOpinion from "./ListOpinion";
+import LayoutRegister from "../LayoutRegister";
 import { Link, useNavigate } from "react-router-dom";
 
 const apiUrl = import.meta.env.VITE_BACKEND;
@@ -26,7 +27,6 @@ export default function FormrcreationOpinions() {
     } catch (error) {
       const message = error?.response?.data?.message; 
       toast(message); // aqui mendiate toast mostramos en pantalle el mensaje de error
-    } finally {
     }
   }; 
 
@@ -65,11 +65,13 @@ export default function FormrcreationOpinions() {
   return (
     <>
       <div className={styles.container}>
+        {myData?.token &&
         <div className="mb-5">
           <Link to={'/profile'}>
             Ver mi perfil
           </Link>
-        </div>
+        </div>}
+        {myData?.token &&
         <div className={styles.containerForm}>
           <h3>Crear opinion</h3> 
 
@@ -83,10 +85,10 @@ export default function FormrcreationOpinions() {
           <button className={styles.btn} onClick={handleRegister}>
             {!loader ? <span>Guardar</span> : <LuLoader2 />}
           </button> 
-        </div>
+        </div>}
         <ToastContainer />
         <ListOpinion opinions={opinions} /> {/*este componente recibe como prop las opiniones para listarlas en una tabla */}
-
+        {!myData?.token && <LayoutRegister/>}
       </div>
     </>
   );
