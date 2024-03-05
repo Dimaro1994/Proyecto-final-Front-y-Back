@@ -30,8 +30,9 @@ const Formregister = () => {
         toast(resp?.message);
       } else {
         setMyData(resp?.data?.data);
+        localStorage.setItem("TOKEN_KEY",JSON.stringify(resp?.data?.data))
         navigate("/home");
-      }
+      } 
     } catch (error) {
       const message = error?.response?.data?.message;
       toast(message);

@@ -1,10 +1,16 @@
-import { createContext, useContext, useState } from "react"; // importamos createcontex, usecontext, usestate de react
+import { createContext, useContext, useState, useEffect } from "react"; // importamos createcontex, usecontext, usestate de react
 
 const MyContext = createContext(); // guardamos el createcontext en una variable mycontext
 
 const MyContextProvider = ({ children }) => { // creamos componente que recive un hijo o children
   const [myData, setMyData] = useState(""); // creamos un estado myData
   // retornamos el Provider 
+  useEffect(() => {
+    const token = localStorage.getItem("TOKEN_KEY");
+    if (token) {
+      setMyData(JSON.parse(token));
+    }
+  }, []);
   return ( 
     <MyContext.Provider value={{ myData, setMyData }}>
       {children}
